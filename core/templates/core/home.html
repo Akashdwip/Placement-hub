@@ -1,0 +1,54 @@
+{% extends "core/base.html" %}
+{% block title %}PlacementHub | College Placement Portal{% endblock %}
+{% block content %}
+<section style="min-height:85vh;display:flex;align-items:center;background:radial-gradient(ellipse at 30% 20%,rgba(108,99,255,0.12) 0%,transparent 60%),var(--ph-bg)">
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 fade-in">
+        <span class="ph-badge ph-badge-new mb-3 d-inline-block"><i class="bi bi-stars me-1"></i>College Placement Portal 2026</span>
+        <h1 class="display-4 fw-bold mb-4" style="letter-spacing:-1px;">
+          Your Career Journey<br>Starts <span class="gradient-text">Right Here</span>
+        </h1>
+        <p class="fs-5 mb-4" style="color:var(--ph-muted);">Connect with top recruiters, discover amazing opportunities, and take the first step toward your dream career.</p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="{% url 'register' %}" class="btn btn-ph-primary btn-lg"><i class="bi bi-rocket-takeoff me-2"></i>Get Started Free</a>
+          <a href="{% url 'login' %}" class="btn btn-ph-outline btn-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</a>
+        </div>
+        <div class="mt-4 d-flex gap-4">
+          <div><span class="fw-bold fs-4 gradient-text">500+</span><p class="mb-0 small" style="color:var(--ph-muted);">Students Placed</p></div>
+          <div><span class="fw-bold fs-4 gradient-text">80+</span><p class="mb-0 small" style="color:var(--ph-muted);">Companies</p></div>
+          <div><span class="fw-bold fs-4 gradient-text">200+</span><p class="mb-0 small" style="color:var(--ph-muted);">Active Jobs</p></div>
+        </div>
+      </div>
+      <div class="col-lg-6 fade-in fade-in-delay-2">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="ph-card p-4 h-100">
+              <div class="mb-3" style="width:48px;height:48px;border-radius:12px;background:rgba(0,212,170,0.12);display:flex;align-items:center;justify-content:center;"><i class="bi bi-mortarboard fs-4" style="color:var(--ph-accent);"></i></div>
+              <h6 class="fw-bold">For Students</h6>
+              <p class="small mb-3" style="color:var(--ph-muted);">Build your profile, explore jobs, track applications.</p>
+              <a href="{% url 'register' %}" class="btn btn-ph-accent btn-sm w-100">Join as Student</a>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="ph-card p-4 h-100">
+              <div class="mb-3" style="width:48px;height:48px;border-radius:12px;background:rgba(108,99,255,0.12);display:flex;align-items:center;justify-content:center;"><i class="bi bi-building fs-4" style="color:var(--ph-primary-light);"></i></div>
+              <h6 class="fw-bold">For Recruiters</h6>
+              <p class="small mb-3" style="color:var(--ph-muted);">Post jobs, find talent, manage applications.</p>
+              <a href="{% url 'register' %}" class="btn btn-ph-primary btn-sm w-100">Join as Recruiter</a>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="ph-card-flat p-4" style="background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(0,212,170,0.08));">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shield-check fs-2" style="color:var(--ph-accent);"></i>
+                <div><h6 class="fw-bold mb-1">Verified and Trusted</h6><p class="mb-0 small" style="color:var(--ph-muted);">All companies are verified. Your data is secure.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

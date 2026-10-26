@@ -1,0 +1,195 @@
+{% extends "core/base.html" %}
+{% block title %}Manage Applications | PlacementHub{% endblock %}
+{% block nav_rec_apps %}active{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <!-- Page Header -->
+  <div class="ph-page-header fade-in">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <h2>Manage <span class="gradient-text">Applications</span></h2>
+        <p class="text-muted">Review student applicants, assess qualifications, and manage application pipelines.</p>
+      </div>
+      <div>
+        <span class="ph-badge ph-badge-new fs-6 p-2"><i class="bi bi-people me-1"></i>{{ applications|length }} Shown</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="ph-card-flat p-4 mb-4 fade-in fade-in-delay-1">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label"><i class="bi bi-search me-1"></i>Search Candidates</label>
+        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search candidate, email, department, or skill...">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label"><i class="bi bi-briefcase me-1"></i>Filter by Job</label>
+        <select name="job" class="form-select">
+          <option value="">All Jobs ({{ recruiter_jobs|length }})</option>
+          {% for r_job in recruiter_jobs %}
+          <option value="{{ r_job.id }}" {% if selected_job == r_job.id|stringformat:"s" %}selected{% endif %}>
+            {{ r_job.title }} ({{ r_job.company.name }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Keep active status filter if present -->
+      {% if status_filter %}
+      <input type="hidden" name="status" value="{{ status_filter }}">
+      {% endif %}
+
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-ph-primary flex-grow-1">
+          <i class="bi bi-funnel me-1"></i>Filter
+        </button>
+        {% if search_query or selected_job or status_filter %}
+        <a href="{% url 'recruiter_applications' %}" class="btn btn-ph-outline" title="Reset Filters">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </a>
+        {% endif %}
+      </div>
+    </form>
+
+    <hr class="my-3">
+
+    <!-- Status Tabs -->
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <span class="text-muted small fw-semibold me-2">Status:</span>
+      <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_job %}job={{ selected_job }}&{% endif %}"
+         class="btn btn-sm {% if not status_filter %}btn-ph-primary{% else %}btn-ph-outline{% endif %}">
+        All <span class="badge bg-dark bg-opacity-50 ms-1">{{ total_count }}</span>
+      </a>
+      <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_job %}job={{ selected_job }}&{% endif %}status=pending"
+         class="btn btn-sm {% if status_filter == 'pending' %}btn-ph-primary{% else %}btn-ph-outline{% endif %}">
+        Pending <span class="badge bg-dark bg-opacity-50 ms-1">{{ pending_count }}</span>
+      </a>
+      <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_job %}job={{ selected_job }}&{% endif %}status=shortlisted"
+         class="btn btn-sm {% if status_filter == 'shortlisted' %}btn-ph-primary{% else %}btn-ph-outline{% endif %}">
+        Shortlisted <span class="badge bg-dark bg-opacity-50 ms-1">{{ shortlisted_count }}</span>
+      </a>
+      <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_job %}job={{ selected_job }}&{% endif %}status=selected"
+         class="btn btn-sm {% if status_filter == 'selected' %}btn-ph-primary{% else %}btn-ph-outline{% endif %}">
+        Selected <span class="badge bg-dark bg-opacity-50 ms-1">{{ selected_count }}</span>
+      </a>
+      <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_job %}job={{ selected_job }}&{% endif %}status=rejected"
+         class="btn btn-sm {% if status_filter == 'rejected' %}btn-ph-primary{% else %}btn-ph-outline{% endif %}">
+        Rejected <span class="badge bg-dark bg-opacity-50 ms-1">{{ rejected_count }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Applications List -->
+  <div class="row g-4 fade-in fade-in-delay-2">
+    {% for application in applications %}
+    <div class="col-12">
+      <div class="ph-card p-4">
+        <div class="row align-items-center g-3">
+          
+          <!-- Candidate & Job Info -->
+          <div class="col-lg-5">
+            <div class="d-flex align-items-start gap-3">
+              <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--ph-primary),var(--ph-accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1.25rem;flex-shrink:0;box-shadow:0 4px 12px rgba(108,99,255,0.3);">
+                {{ application.student.username|first|upper }}
+              </div>
+              <div class="overflow-hidden">
+                <h5 class="fw-bold mb-1 text-truncate">{{ application.student.student_profile.full_name|default:application.student.username }}</h5>
+                <p class="mb-1 small" style="color:var(--ph-muted);">
+                  <i class="bi bi-envelope me-1"></i>{{ application.student.email|default:"No email registered" }}
+                </p>
+                <div class="d-flex gap-2 flex-wrap align-items-center small mb-2">
+                  <span class="badge bg-dark border border-secondary border-opacity-25 text-light">
+                    <i class="bi bi-mortarboard me-1 text-info"></i>{{ application.student.student_profile.department|default:"Dept N/A" }}
+                  </span>
+                  <span class="badge bg-dark border border-secondary border-opacity-25 text-light">
+                    <i class="bi bi-graph-up me-1 text-warning"></i>CGPA: <strong>{{ application.student.student_profile.cgpa|default:"N/A" }}</strong>
+                  </span>
+                </div>
+                <div class="small" style="color:var(--ph-primary-light);">
+                  <i class="bi bi-briefcase me-1"></i><strong>{{ application.job.title }}</strong> &middot; <span style="color:var(--ph-muted);">{{ application.job.company.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills, Resume & Applied Date -->
+          <div class="col-lg-3">
+            <div class="mb-2">
+              <span class="small" style="color:var(--ph-muted);"><i class="bi bi-clock me-1"></i>Applied: {{ application.applied_at|date:"d M Y, h:i A" }}</span>
+            </div>
+            
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+              {% if application.status == "pending" %}<span class="ph-badge ph-badge-pending"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+              {% elif application.status == "shortlisted" %}<span class="ph-badge ph-badge-shortlisted"><i class="bi bi-star-fill me-1"></i>Shortlisted</span>
+              {% elif application.status == "rejected" %}<span class="ph-badge ph-badge-rejected"><i class="bi bi-x-circle me-1"></i>Rejected</span>
+              {% elif application.status == "selected" %}<span class="ph-badge ph-badge-selected"><i class="bi bi-check-circle me-1"></i>Selected</span>
+              {% else %}<span class="ph-badge ph-badge-inactive">{{ application.get_status_display }}</span>{% endif %}
+
+              {% if application.student.student_profile.resume %}
+              <a href="{{ application.student.student_profile.resume.url }}" target="_blank" class="btn btn-ph-accent btn-sm py-1 px-2" style="font-size:0.8rem;">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Resume
+              </a>
+              {% else %}
+              <span class="small text-muted fst-italic">No resume</span>
+              {% endif %}
+            </div>
+
+            {% if application.student.student_profile.skills_list %}
+            <div class="d-flex flex-wrap gap-1 mt-1">
+              {% for skill in application.student.student_profile.skills_list|slice:":3" %}
+              <span class="badge bg-secondary bg-opacity-25 text-light" style="font-size:0.7rem;">{{ skill }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Action Status Form -->
+          <div class="col-lg-4">
+            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.03); border:1px solid var(--ph-border);">
+              <label class="form-label small mb-1 fw-semibold">Application Status</label>
+              <form method="POST" action="{% url 'update_application_status' application.id %}" class="d-flex gap-2 align-items-center">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <select name="status" class="form-select form-select-sm" style="flex:1;">
+                  <option value="pending" {% if application.status == "pending" %}selected{% endif %}>Pending</option>
+                  <option value="shortlisted" {% if application.status == "shortlisted" %}selected{% endif %}>Shortlisted</option>
+                  <option value="selected" {% if application.status == "selected" %}selected{% endif %}>Selected</option>
+                  <option value="rejected" {% if application.status == "rejected" %}selected{% endif %}>Rejected</option>
+                </select>
+                <button type="submit" class="btn btn-ph-primary btn-sm" style="white-space:nowrap;">
+                  <i class="bi bi-arrow-repeat me-1"></i>Update
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="ph-card-flat">
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <h5>No Applications Found</h5>
+          <p>No applications match your filter or search criteria.</p>
+          {% if search_query or selected_job or status_filter %}
+          <a href="{% url 'recruiter_applications' %}" class="btn btn-ph-outline">Clear Filters</a>
+          {% else %}
+          <a href="{% url 'recruiter_dashboard' %}" class="btn btn-ph-primary">Back to Dashboard</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'recruiter_dashboard' %}" class="btn btn-ph-outline"><i class="bi bi-arrow-left me-2"></i>Back to Dashboard</a>
+  </div>
+
+</div>
+{% endblock %}

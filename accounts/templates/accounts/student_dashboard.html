@@ -1,0 +1,81 @@
+{% extends "core/base.html" %}
+{% block title %}Student Dashboard | PlacementHub{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <!-- Header -->
+  <div class="ph-page-header fade-in">
+    <h2>Welcome back, <span class="gradient-text">{{ request.user.username }}</span>! 👋</h2>
+    <p class="text-muted">Here's what's happening with your placement journey.</p>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4 fade-in fade-in-delay-1">
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">My Applications</span>
+          <div class="stat-icon" style="background:rgba(108,99,255,0.12);"><i class="bi bi-file-earmark-text" style="color:var(--ph-primary-light);"></i></div>
+        </div>
+        <div class="stat-number gradient-text">{{ application_count|default:"0" }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">Active Jobs</span>
+          <div class="stat-icon" style="background:rgba(0,212,170,0.12);"><i class="bi bi-briefcase" style="color:var(--ph-accent);"></i></div>
+        </div>
+        <div class="stat-number gradient-text">{{ active_jobs_count|default:"0" }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">Profile Status</span>
+          <div class="stat-icon" style="background:rgba(251,191,36,0.12);"><i class="bi bi-person-circle" style="color:var(--ph-gold);"></i></div>
+        </div>
+        <div class="stat-number" style="font-size:1.2rem; margin-top:8px;">
+          {% if profile_complete %}<span class="ph-badge ph-badge-selected">Complete</span>{% else %}<span class="ph-badge ph-badge-pending">Incomplete</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Cards -->
+  <div class="row g-3 fade-in fade-in-delay-2">
+    <div class="col-md-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(108,99,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>
+        <h5 class="fw-bold">My Profile</h5>
+        <p class="text-muted flex-grow-1">Manage your academic details, upload your resume and list your skills.</p>
+        <a href="{% url 'student_profile' %}" class="btn btn-ph-primary mt-2">
+          <i class="bi bi-person-circle me-2"></i>View Profile
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(0,212,170,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🔍</div>
+        <h5 class="fw-bold">Browse Jobs</h5>
+        <p class="text-muted flex-grow-1">Explore active job openings and find the perfect opportunity matching your skills.</p>
+        <a href="{% url 'browse_jobs' %}" class="btn btn-ph-accent mt-2">
+          <i class="bi bi-search me-2"></i>Explore Jobs
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(251,191,36,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📋</div>
+        <h5 class="fw-bold">My Applications</h5>
+        <p class="text-muted flex-grow-1">Track your placement applications and monitor their current status in real time.</p>
+        <a href="{% url 'my_applications' %}" class="btn btn-ph-primary mt-2">
+          <i class="bi bi-file-earmark-text me-2"></i>View Applications
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

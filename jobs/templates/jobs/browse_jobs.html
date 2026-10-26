@@ -1,0 +1,108 @@
+{% extends "core/base.html" %}
+{% block title %}Browse Jobs | PlacementHub{% endblock %}
+{% block nav_jobs %}active{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <!-- Header -->
+  <div class="ph-page-header fade-in">
+    <h2>Browse <span class="gradient-text">Jobs</span></h2>
+    <p class="text-muted">Explore opportunities and find your next role.</p>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="ph-card-flat p-4 mb-4 fade-in fade-in-delay-1">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label"><i class="bi bi-search me-1"></i>Search Jobs</label>
+        <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Job title, skills...">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label"><i class="bi bi-geo-alt me-1"></i>Location</label>
+        <input type="text" name="location" value="{{ request.GET.location }}" class="form-control" placeholder="City or Remote">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label"><i class="bi bi-mortarboard me-1"></i>Min CGPA</label>
+        <input type="number" name="cgpa" value="{{ request.GET.cgpa }}" class="form-control" step="0.01" min="0" max="10" placeholder="e.g. 7.00">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-ph-primary w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Job Cards -->
+  <div class="row g-4 fade-in fade-in-delay-2">
+    {% for job in jobs %}
+    <div class="col-md-6">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h5 class="fw-bold mb-1">{{ job.title }}</h5>
+            <p class="mb-0" style="color:var(--ph-muted);"><i class="bi bi-building me-1"></i>{{ job.company.name }}</p>
+          </div>
+          <span class="ph-badge ph-badge-active"><i class="bi bi-circle-fill" style="font-size:6px;vertical-align:middle;"></i> Active</span>
+        </div>
+
+        <p class="mb-3" style="color:var(--ph-muted); font-size:0.9rem; flex-grow:1;">{{ job.description|truncatewords:25 }}</p>
+
+        <div class="row g-2 mb-3">
+          {% if job.location %}
+          <div class="col-6"><span class="small" style="color:var(--ph-muted);"><i class="bi bi-geo-alt me-1"></i>{{ job.location }}</span></div>
+          {% endif %}
+          {% if job.salary %}
+          <div class="col-6"><span class="small" style="color:var(--ph-muted);"><i class="bi bi-currency-rupee me-1"></i>{{ job.salary }}</span></div>
+          {% endif %}
+          <div class="col-6"><span class="small" style="color:var(--ph-muted);"><i class="bi bi-graph-up me-1"></i>Min CGPA: {{ job.minimum_cgpa }}</span></div>
+          {% if job.deadline %}
+          <div class="col-6"><span class="small" style="color:var(--ph-muted);"><i class="bi bi-calendar me-1"></i>{{ job.deadline }}</span></div>
+          {% endif %}
+        </div>
+
+        {% if job.skills_list %}
+        <div class="mb-3">
+          <span class="small fw-semibold" style="color:var(--ph-muted);">Skills:</span>
+          {% for skill in job.skills_list|slice:":5" %}
+          <span class="ph-badge ph-badge-new ms-1">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        {% elif job.required_skills %}
+        <div class="mb-3">
+          <span class="small fw-semibold" style="color:var(--ph-muted);">Skills:</span>
+          <span class="small ms-1" style="color:var(--ph-muted);">{{ job.required_skills|truncatechars:50 }}</span>
+        </div>
+        {% endif %}
+
+        {% if job.id in applied_job_ids %}
+        <button type="button" class="btn btn-ph-outline w-100" disabled style="opacity:0.85;border-color:rgba(0,212,170,0.3);color:var(--ph-accent);">
+          <i class="bi bi-check2-circle me-2"></i>Already Applied
+        </button>
+        {% else %}
+        <form method="POST" action="{% url 'apply_for_job' job.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ph-primary w-100">
+            <i class="bi bi-send me-2"></i>Apply for Job
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="ph-card-flat">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h5>No Jobs Found</h5>
+          <p>No active jobs match your search. Try adjusting your filters.</p>
+          <a href="{% url 'browse_jobs' %}" class="btn btn-ph-outline">Clear Filters</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'student_dashboard' %}" class="btn btn-ph-outline"><i class="bi bi-arrow-left me-2"></i>Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

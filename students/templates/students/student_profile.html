@@ -1,0 +1,147 @@
+{% extends "core/base.html" %}
+{% block title %}My Profile | PlacementHub{% endblock %}
+{% block nav_profile %}active{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <!-- Header -->
+  <div class="ph-page-header fade-in">
+    <h2>Student <span class="gradient-text">Profile</span></h2>
+    <p class="text-muted">Manage your academic profile, upload your resume, and showcase your skills to recruiters.</p>
+  </div>
+
+  <div class="row g-4 fade-in fade-in-delay-1">
+    <!-- Left Column: Current Profile Overview -->
+    <div class="col-lg-4">
+      <div class="ph-card p-4 h-100">
+        <div class="text-center mb-4">
+          <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--ph-primary),var(--ph-accent));display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:1.8rem;box-shadow:0 8px 24px rgba(108,99,255,0.35);">
+            {{ request.user.username|first|upper }}
+          </div>
+          <h5 class="fw-bold mt-3 mb-0">{{ profile.full_name|default:request.user.username }}</h5>
+          <p class="small text-muted mb-2">{{ request.user.email }}</p>
+          <span class="role-badge student"><i class="bi bi-mortarboard me-1"></i>Student</span>
+        </div>
+
+        <hr>
+
+        <div class="mb-3">
+          <span class="small text-muted d-block mb-1">Department</span>
+          <span class="fw-semibold"><i class="bi bi-diagram-3 me-2" style="color:var(--ph-primary-light);"></i>{{ profile.department|default:"Not specified" }}</span>
+        </div>
+
+        <div class="mb-3">
+          <span class="small text-muted d-block mb-1">Graduation Year</span>
+          <span class="fw-semibold"><i class="bi bi-calendar-event me-2" style="color:var(--ph-accent);"></i>{{ profile.graduation_year|default:"Not specified" }}</span>
+        </div>
+
+        <div class="mb-3">
+          <span class="small text-muted d-block mb-1">CGPA</span>
+          {% if profile.cgpa %}
+          <span class="ph-badge ph-badge-selected fs-6"><i class="bi bi-graph-up me-1"></i>{{ profile.cgpa }} / 10.0</span>
+          {% else %}
+          <span class="ph-badge ph-badge-pending">Not set</span>
+          {% endif %}
+        </div>
+
+        <div class="mb-4">
+          <span class="small text-muted d-block mb-2">Resume</span>
+          {% if profile.resume %}
+          <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);">
+            <div class="small text-truncate me-2">
+              <i class="bi bi-file-earmark-pdf text-danger me-1"></i>Resume Uploaded
+            </div>
+            <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-ph-accent btn-sm py-1 px-2">
+              <i class="bi bi-eye me-1"></i>View
+            </a>
+          </div>
+          {% else %}
+          <span class="ph-badge ph-badge-rejected"><i class="bi bi-exclamation-triangle me-1"></i>No resume uploaded</span>
+          {% endif %}
+        </div>
+
+        {% if profile.skills_list %}
+        <div>
+          <span class="small text-muted d-block mb-2">Key Skills</span>
+          <div class="d-flex flex-wrap gap-1">
+            {% for skill in profile.skills_list %}
+            <span class="ph-badge ph-badge-new">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Column: Edit Form -->
+    <div class="col-lg-8">
+      <div class="ph-card-flat p-4 p-md-5">
+        <h4 class="fw-bold mb-1">Update Details</h4>
+        <p class="text-muted mb-4">Keep your details up to date so recruiters can evaluate your application accurately.</p>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger mb-4">
+            {{ form.non_field_errors }}
+          </div>
+          {% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="{{ form.full_name.id_for_label }}" class="form-label">Full Name</label>
+              {{ form.full_name }}
+              {% for error in form.full_name.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.department.id_for_label }}" class="form-label">Department / Branch</label>
+              {{ form.department }}
+              {% for error in form.department.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.graduation_year.id_for_label }}" class="form-label">Graduation Year</label>
+              {{ form.graduation_year }}
+              {% for error in form.graduation_year.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.cgpa.id_for_label }}" class="form-label">CGPA (Out of 10.0)</label>
+              {{ form.cgpa }}
+              {% for error in form.cgpa.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.skills.id_for_label }}" class="form-label">Skills (Comma-separated)</label>
+              {{ form.skills }}
+              <div class="small text-muted mt-1">Example: Python, Django, SQL, React, Git</div>
+              {% for error in form.skills.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.resume.id_for_label }}" class="form-label">Upload Resume (PDF only)</label>
+              {{ form.resume }}
+              {% if profile.resume %}
+              <div class="small text-muted mt-1">Current file: <a href="{{ profile.resume.url }}" target="_blank">{{ profile.resume.name }}</a></div>
+              {% endif %}
+              {% for error in form.resume.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 mt-4 pt-2">
+            <button type="submit" class="btn btn-ph-primary">
+              <i class="bi bi-check2-circle me-2"></i>Save Profile
+            </button>
+            <a href="{% url 'student_dashboard' %}" class="btn btn-ph-outline">
+              <i class="bi bi-arrow-left me-2"></i>Dashboard
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

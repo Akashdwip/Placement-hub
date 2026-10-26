@@ -1,0 +1,99 @@
+{% extends "core/base.html" %}
+{% block title %}Recruiter Dashboard | PlacementHub{% endblock %}
+{% block nav_rec_dashboard %}active{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <!-- Header -->
+  <div class="ph-page-header fade-in">
+    <h2>Welcome back, <span class="gradient-text">{{ request.user.username }}</span>! 👋</h2>
+    <p class="text-muted">Manage your companies, post jobs and review applications.</p>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4 fade-in fade-in-delay-1">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">My Companies</span>
+          <div class="stat-icon" style="background:rgba(108,99,255,0.12);"><i class="bi bi-building" style="color:var(--ph-primary-light);"></i></div>
+        </div>
+        <div class="stat-number gradient-text">{{ company_count|default:"0" }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">Active Jobs</span>
+          <div class="stat-icon" style="background:rgba(0,212,170,0.12);"><i class="bi bi-briefcase" style="color:var(--ph-accent);"></i></div>
+        </div>
+        <div class="stat-number gradient-text">{{ job_count|default:"0" }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">Total Applications</span>
+          <div class="stat-icon" style="background:rgba(251,191,36,0.12);"><i class="bi bi-people" style="color:var(--ph-gold);"></i></div>
+        </div>
+        <div class="stat-number gradient-text">{{ application_count|default:"0" }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small">Pending Reviews</span>
+          <div class="stat-icon" style="background:rgba(239,68,68,0.12);"><i class="bi bi-clock" style="color:#f87171;"></i></div>
+        </div>
+        <div class="stat-number gradient-text">{{ pending_count|default:"0" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <h5 class="fw-bold mb-3 fade-in fade-in-delay-1" style="color:var(--ph-muted);">QUICK ACTIONS</h5>
+  <div class="row g-3 fade-in fade-in-delay-2">
+    <div class="col-md-6 col-lg-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(108,99,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🏢</div>
+        <h5 class="fw-bold">My Companies</h5>
+        <p class="text-muted flex-grow-1">Create and manage your company profiles on the platform.</p>
+        <a href="{% url 'company_list' %}" class="btn btn-ph-primary mt-2"><i class="bi bi-building me-2"></i>View Companies</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(0,212,170,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">➕</div>
+        <h5 class="fw-bold">Add Company</h5>
+        <p class="text-muted flex-grow-1">Register a new company before posting jobs for students.</p>
+        <a href="{% url 'create_company' %}" class="btn btn-ph-accent mt-2"><i class="bi bi-plus-circle me-2"></i>Create Company</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(251,191,36,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📢</div>
+        <h5 class="fw-bold">Post a Job</h5>
+        <p class="text-muted flex-grow-1">Publish new job openings for eligible students to apply.</p>
+        <a href="{% url 'create_job' %}" class="btn btn-ph-primary mt-2"><i class="bi bi-megaphone me-2"></i>Post a Job</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">💼</div>
+        <h5 class="fw-bold">My Job Postings</h5>
+        <p class="text-muted flex-grow-1">View, manage, and toggle active/inactive status on your posted jobs.</p>
+        <a href="{% url 'job_list' %}" class="btn btn-ph-outline mt-2"><i class="bi bi-briefcase me-2"></i>View My Jobs</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="ph-card p-4 h-100 d-flex flex-column">
+        <div class="mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👥</div>
+        <h5 class="fw-bold">Applications</h5>
+        <p class="text-muted flex-grow-1">Review student applications, shortlist candidates, and update their status.</p>
+        <a href="{% url 'recruiter_applications' %}" class="btn btn-ph-danger mt-2"><i class="bi bi-people me-2"></i>Manage Applications</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
